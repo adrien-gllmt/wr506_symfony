@@ -2,50 +2,80 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
 use App\Repository\MovieRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: MovieRepository::class)]
-#[ApiResource]
+#[ApiResource(
+    normalizationContext: [
+        'groups' => ['movie:read'],
+    ],
+)]
+#[Put(security: "is_granted('ROLE_ADMIN') or object.owner == user")]
+#[Post(security: "is_granted('ROLE_ADMIN')")]
 class Movie
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['movie:read', 'actor:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 70)]
+    #[Groups(['movie:read', 'actor:read', 'category:read'])]
+    #[Assert\NotBlank]
+    #[ApiFilter(SearchFilter::class, strategy: 'partial')]
     private ?string $title = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['movie:read', 'actor:read'])]
     private ?string $description = null;
 
     #[ORM\Column]
+    #[Groups(['movie:read', 'actor:read'])]
+    #[Assert\NotBlank]
     private ?int $duration = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
+    #[Groups(['movie:read', 'actor:read'])]
     private ?\DateTimeInterface $release = null;
 
     #[ORM\Column]
+    #[Groups(['movie:read'])]
+    #[Assert\NotBlank]
     private ?int $entries = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['movie:read'])]
     private ?int $budget = null;
 
     #[ORM\ManyToMany(targetEntity: Actor::class, mappedBy: 'movies')]
+    #[Groups(['movie:read'])]
+    #[Assert\NotBlank]
     private Collection $actors;
 
     #[ORM\ManyToOne(inversedBy: 'movies')]
+    #[Groups(['movie:read', 'actor:read'])]
+    #[Assert\NotBlank]
     private ?Category $category = null;
 
     #[ORM\Column(length: 60)]
+    #[Groups(['movie:read'])]
+    #[Assert\NotBlank]
     private ?string $director = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['movie:read'])]
     private ?int $note = null;
 
     public function __construct()
