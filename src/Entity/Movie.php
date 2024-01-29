@@ -5,6 +5,7 @@ namespace App\Entity;
 use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
 use App\Repository\MovieRepository;
@@ -23,6 +24,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 )]
 #[Put(security: "is_granted('ROLE_ADMIN') or object.owner == user")]
 #[Post(security: "is_granted('ROLE_ADMIN')")]
+#[Get]
 class Movie
 {
     #[ORM\Id]
@@ -37,18 +39,18 @@ class Movie
     #[ApiFilter(SearchFilter::class, strategy: 'partial')]
     private ?string $title = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
     #[Groups(['movie:read', 'actor:read'])]
     private ?string $description = null;
 
     #[ORM\Column]
     #[Groups(['movie:read', 'actor:read'])]
     #[Assert\NotBlank]
-    private ?int $duration = null;
+    private ?string $duration = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     #[Groups(['movie:read', 'actor:read'])]
-    private ?\DateTimeInterface $release = null;
+    private ?\DateTimeInterface $releaseDate = null;
 
     #[ORM\Column]
     #[Groups(['movie:read'])]
@@ -112,26 +114,26 @@ class Movie
         return $this;
     }
 
-    public function getDuration(): ?int
+    public function getDuration(): ?string
     {
         return $this->duration;
     }
 
-    public function setDuration(int $duration): static
+    public function setDuration(string $duration): static
     {
         $this->duration = $duration;
 
         return $this;
     }
 
-    public function getRelease(): ?\DateTimeInterface
+    public function getReleaseDate(): ?\DateTimeInterface
     {
-        return $this->release;
+        return $this->releaseDate;
     }
 
-    public function setRelease(?\DateTimeInterface $release): static
+    public function setReleaseDate(?\DateTimeInterface $releaseDate): static
     {
-        $this->release = $release;
+        $this->releaseDate = $releaseDate;
 
         return $this;
     }
