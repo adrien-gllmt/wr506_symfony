@@ -22,9 +22,9 @@ use Symfony\Component\Validator\Constraints as Assert;
         'groups' => ['movie:read'],
     ],
 )]
-#[Put(security: "is_granted('ROLE_ADMIN') or object.owner == user")]
-#[Post(security: "is_granted('ROLE_ADMIN')")]
-#[Get]
+//#[Put(security: "is_granted('ROLE_ADMIN') or object.owner == user")]
+//#[Post(security: "is_granted('ROLE_ADMIN')")]
+//#[Get]
 class Movie
 {
     #[ORM\Id]
